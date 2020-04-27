@@ -8,7 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import br.com.sisdb.os.domain.ValidationGroups;
 
 @Entity
 public class Cliente implements Serializable{
@@ -16,7 +19,7 @@ public class Cliente implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	
-	@Id
+	@Id	
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@NotBlank

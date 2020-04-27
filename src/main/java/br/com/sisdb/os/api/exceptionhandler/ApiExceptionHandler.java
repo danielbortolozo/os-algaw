@@ -1,6 +1,6 @@
 package br.com.sisdb.os.api.exceptionhandler;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import br.com.sisdb.os.domain.exception.EntidadeNaoEncontradaException;
 import br.com.sisdb.os.domain.exception.NegocioException;
 
 @ControllerAdvice
@@ -26,13 +27,27 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Autowired
 	private MessageSource messageSource;
 	
+	
+	@ExceptionHandler(EntidadeNaoEncontradaException.class)
+	public ResponseEntity<Object> handleEntidadeNaoEncontrada(NegocioException e, WebRequest request) {
+		HttpStatus status =  HttpStatus.NOT_FOUND;
+		Problema prob = new Problema();
+		prob.setStatus(status.value());
+		prob.setTitulo(e.getMessage());
+		prob.setDataHora(OffsetDateTime.now());
+		
+		return handleExceptionInternal(e, prob, new HttpHeaders(), status, request);
+	}
+	
+	
+	
 	@ExceptionHandler(NegocioException.class)
 	public ResponseEntity<Object> handleNegocio(NegocioException e, WebRequest request) {
 		HttpStatus status =  HttpStatus.BAD_REQUEST;
 		Problema prob = new Problema();
 		prob.setStatus(status.value());
 		prob.setTitulo(e.getMessage());
-		prob.setDataHora(LocalDateTime.now());
+		prob.setDataHora(OffsetDateTime.now());
 		
 		return handleExceptionInternal(e, prob, new HttpHeaders(), status, request);
 	}
@@ -54,7 +69,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		}
 		
 		problema.setStatus(status.value());
-		problema.setDataHora(LocalDateTime.now());
+		problema.setDataHora(OffsetDateTime.now());
 		problema.setTitulo("Um ou mais campos estão inválidos. Faça o preenchimento correto.");
 		problema.setCampos(campos);
 
